@@ -60,6 +60,13 @@ describe('controller', function () {
 
 	it('should show entries on start-up', function () {
 		// TODO: write test
+		var todo = { title: 'my todo' };
+		setUpModel([todo]);
+
+		subject.setView('');
+
+		//test render function is called with arguments from todo in any view set	
+		expect(view.render).toHaveBeenCalledWith('showEntries', [todo]);
 	});
 
 	describe('routing', function () {
@@ -84,76 +91,140 @@ describe('controller', function () {
 
 		it('should show active entries', function () {
 			// TODO: write test
+			//shows not completed tasks (completed = false)
+			var todo = { title: 'my todo', completed: false };
+			
+			setUpModel([todo]);
+
+			subject.setView('#/active'); //set active state of view in URL
+
+			expect(view.render).toHaveBeenCalledWith('showEntries', [todo]);
+			expect(todo.completed).toEqual(false);
+
 		});
 
 		it('should show completed entries', function () {
 			// TODO: write test
+			//shows completed tasks (completed = true)
+			var todo = { title: 'my todo', completed: true };
+			setUpModel([todo]);
+
+			subject.setView('#/completed'); //set completed state of view in URL
+
+			expect(view.render).toHaveBeenCalledWith('showEntries', [todo]);
+			expect(todo.completed).toEqual(true);
 		});
 	});
 
-	it('should show the content block when todos exists', function () {
-		setUpModel([{title: 'my todo', completed: true}]);
+	describe('display', function () {
+		
+		it('should show the content block when todos exists', function () {
+			setUpModel([{title: 'my todo', completed: true}]);
 
-		subject.setView('');
+			subject.setView('');
 
-		expect(view.render).toHaveBeenCalledWith('contentBlockVisibility', {
-			visible: true
+			expect(view.render).toHaveBeenCalledWith('contentBlockVisibility', {
+				visible: true
+			});
 		});
-	});
 
-	it('should hide the content block when no todos exists', function () {
-		setUpModel([]);
+		it('should hide the content block when no todos exists', function () {
+			setUpModel([]);
 
-		subject.setView('');
+			subject.setView('');
 
-		expect(view.render).toHaveBeenCalledWith('contentBlockVisibility', {
-			visible: false
+			expect(view.render).toHaveBeenCalledWith('contentBlockVisibility', {
+				visible: false
+			});
 		});
-	});
 
-	it('should check the toggle all button, if all todos are completed', function () {
-		setUpModel([{title: 'my todo', completed: true}]);
+		it('should check the toggle all button, if all todos are completed', function () {
+			setUpModel([{title: 'my todo', completed: true}]);
 
-		subject.setView('');
+			subject.setView('');
 
-		expect(view.render).toHaveBeenCalledWith('toggleAll', {
-			checked: true
+			expect(view.render).toHaveBeenCalledWith('toggleAll', {
+				checked: true
+			});
 		});
-	});
 
-	it('should set the "clear completed" button', function () {
-		var todo = {id: 42, title: 'my todo', completed: true};
-		setUpModel([todo]);
+		it('should set the "clear completed" button', function () {
+			var todo = {id: 42, title: 'my todo', completed: true};
+			setUpModel([todo]);
 
-		subject.setView('');
+			subject.setView('');
 
-		expect(view.render).toHaveBeenCalledWith('clearCompletedButton', {
-			completed: 1,
-			visible: true
+			expect(view.render).toHaveBeenCalledWith('clearCompletedButton', {
+				completed: 1,
+				visible: true
+			});
 		});
-	});
 
-	it('should highlight "All" filter by default', function () {
-		// TODO: write test
-	});
+		it('should highlight "All" filter by default', function () {
+			// TODO: write test
+			var todo = {id: 42, title: 'my todo', completed: true};
+			setUpModel([todo]);
 
-	it('should highlight "Active" filter when switching to active view', function () {
-		// TODO: write test
-	});
+			subject.setView('');
+
+			expect(view.render).toHaveBeenCalledWith('setFilter', '');
+		});
+
+		it('should highlight "Active" filter when switching to active view', function () {
+			// TODO: write test
+			//choose active task (false completed) task, filter them and set them to the active state
+			var todo = { id: 42, title: 'my todo', completed: false };
+			
+			setUpModel([todo]);
+
+			subject.setView('#/active');
+
+			expect(view.render).toHaveBeenCalledWith('setFilter', 'active');
+
+		});
+	})
+
 
 	describe('toggle all', function () {
 		it('should toggle all todos to completed', function () {
 			// TODO: write test
+			//change all todos to completed when toggleAll is triggered
+			var todo = { id: 42, title: 'my todo', completed: false };
+			setUpModel([todo]);
+
+			subject.setView('')
+			
+			view.trigger('toggleAll', { completed: true })
+			expect(model.update).toHaveBeenCalledWith(42, {completed:true},jasmine.any(Function) )
+
 		});
 
 		it('should update the view', function () {
 			// TODO: write test
+			var todo = { id: 42, title: 'my todo', completed: true };
+
+			setUpModel([todo])
+
+			subject.setView('')
+
+			view.trigger('toggleAll', { completed: false })
+			
+			//update the view render when element complete
+			expect(view.render).toHaveBeenCalledWith('elementComplete', {id: 42, completed:false})
 		});
 	});
 
 	describe('new todo', function () {
 		it('should add a new todo to the model', function () {
 			// TODO: write test
+			// add new todo to model 
+			setUpModel([]);
+			subject.setView('');
+
+			var newTodo = 'new todo task';
+			view.trigger('newTodo', newTodo);
+
+			expect(model.create).toHaveBeenCalledWith(newTodo, jasmine.any(Function));
 		});
 
 		it('should add a new todo to the view', function () {
@@ -180,7 +251,7 @@ describe('controller', function () {
 			}]);
 		});
 
-		it('should clear the input field when a new todo is added', function () {
+;		it('should clear the input field when a new todo is added', function () {
 			setUpModel([]);
 
 			subject.setView('');
@@ -194,6 +265,12 @@ describe('controller', function () {
 	describe('element removal', function () {
 		it('should remove an entry from the model', function () {
 			// TODO: write test
+			//remove todo task
+			var todo = { id: 42, title: 'my todo', completed: true };
+			setUpModel([todo]);
+			subject.setView('');
+			view.trigger('itemRemove', { id: 42 });
+			expect(model.remove).toHaveBeenCalledWith(42, jasmine.any(Function))
 		});
 
 		it('should remove an entry from the view', function () {
