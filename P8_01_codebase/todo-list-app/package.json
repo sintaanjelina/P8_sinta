@@ -2,6 +2,7 @@
   "private": true,
   "dependencies": {
     "jasmine": "^3.6.3",
+    "package-lock.json": "^1.0.0",
     "package.json": "^2.0.1",
     "todomvc-app-css": "^2.0.1",
     "todomvc-common": "^1.0.1"
