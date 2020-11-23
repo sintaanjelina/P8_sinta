@@ -14,3 +14,4 @@
 - Jasmine for unit testing
 - HTML
 - CSS
+- Lighthouse Chrome Developer Tools 
