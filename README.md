@@ -2,7 +2,7 @@
 ### Openclassroom Project 8
 #### Enhance an Existing Project for "Open Classroom Front-End Developer Path offered By DevC Medan and powered by OpenClassroom Workplace Facebook"
 
-# Todo-list-app Site: https://github.com/sintaanjelina/P8_sinta
+# Todo-list-app Site: https://sintaanjelina.github.io/P8_sinta
 # Project Summary 
 ##### To Do:
 - Fixing the bugs
